@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.insert_key = false
+  config.vm.define :centos_server do |server|
+    server.vm.box = "centos/7"
+    server.vm.network :private_network, ip: "192.168.33.15"
+    server.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "2048","--cpus", "8", "--name", "centos_webserver_LR"]
+    end
+
+     config.vm.provision :chef_solo do |chef|
+       chef.install = false
+       chef.cookbooks_path = "cookbooks"
+       chef.add_recipe "httpd"
+     end
+  end
+end
